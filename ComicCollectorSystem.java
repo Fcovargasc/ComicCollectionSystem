@@ -1,22 +1,14 @@
-/* paso 1 en mascarar el projecto y transformarlo en una tienda de comic renombrando
-todo lo necesario para que cumpla con lo que piden 
-guardar arraylist para almacenar los objetos de la clase comic osea hacer que coincida cambiar nombre a las clases
-hashmap para gestionar objetos de la clase usuario tengo qeu hacer lo mismo 
-tengo que usar BufferedReader para leer datos de archivos CSV y tambien escribirlos
-tambioen FIleWriter para guardar informacion de usuarios incluido los detalles de prestamos de comic 
-
+/*
+provar y limpiar codigo para darle mas seguridad
  */
 package ComicCollectorSystem;
 
 import Exceptions.EstudianteNoEncontradoException;
-import Exceptions.LibroNoEncontradoException;
 import REgistroComic.Comic;
 import REgistroComic.RegistroComic;
 import RegistroUsuarios.RegistroUsuario;
 import RegistroUsuarios.Usuario;
-import java.util.HashMap;
 import java.util.InputMismatchException;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -28,15 +20,17 @@ public class ComicCollectorSystem {
         
         int opcion = 0,opcion2=0, id=0,telefono,codigoComic = 0;
         String rut,nombre,apellido,direccion,comuna,autor,titulo,mail;
-        boolean estado,continuar=true;
+        boolean continuar=true;
         
-        HashMap<Integer,String> guardar = new HashMap<>();
+        Usuario usuarios =new Usuario();
         Usuario reUsuario = new Usuario();
         Comic reComic = new Comic();
-        
+        Comic comics = new Comic();
+        reUsuario.cargarUsuariosTXT("usuarios.txt");
        do {
             
                 System.out.println("Bienvenidos A la Biblioteca");
+               
                 System.out.println("");
                 System.out.println("Presione");
                 System.out.println("1 Para registrar Usuario nuevo");
@@ -55,8 +49,10 @@ public class ComicCollectorSystem {
                     
                     case 1:
                         System.out.println("Registro de Usuario");
+                        do{
                         System.out.println("Ingrese su rut con punto y guion");
                         rut = scanner.nextLine();
+                        }while(rut.length()>12||rut.length()<11);
                         System.out.println("Ingrese su nombre");
                         nombre = scanner.nextLine();
                         System.out.println("Ingrese su Apellido");
@@ -76,31 +72,34 @@ public class ComicCollectorSystem {
                         }
                         System.out.println("Ingrese su Email");
                         mail=scanner.nextLine();
-                        System.out.println("Ingrese su id de estudiante");
+                        do{
+                        System.out.println("Ingrese su id de Usuario de 5 digitos");
                         id = scanner.nextInt();
+                        }while(id<10000 || id >99999);
                         scanner.nextLine(); 
 
                         RegistroUsuario registrousuario = new RegistroUsuario(rut, nombre, apellido, direccion, comuna, telefono,mail, id);
                         reUsuario.agregarUsuario(registrousuario);
+                        usuarios.agregarUsuario(registrousuario);
+                        usuarios.guardarUsuariosTXT("usuarios.txt");
+                        System.out.println("Usuario Creado con Exito");
                         break;
 
                     case 2:
                         System.out.println("Datos Del Usuario");
-                        if (id == 0) {
-                            System.out.println("Debe crear un usuario primero");
-                            break;
-                        }
+                       
                         
                        
                          try {
-                                 System.out.println("Ingrese su Id de Estudiante");
+                                 System.out.println("Ingrese su Id de Usuario");
                                  id = scanner.nextInt();
                                  scanner.nextLine(); 
-                                 reUsuario.mostrarCLientes(id);
+                                 
                             if (!reUsuario.usuarioExiste(id)) { 
                                 throw new EstudianteNoEncontradoException("El Usuario con el código " + id + " no fue encontrado.");
                         }
-                            reUsuario.mostrarCLientes(id);
+                            reUsuario.mostrarClientes(id);
+                            //reUsuario.mostrarClientes(id);
                         } catch (EstudianteNoEncontradoException e) {
                             System.out.println(e.getMessage());
                             break;
@@ -112,10 +111,7 @@ public class ComicCollectorSystem {
                          break;
                     case 3:
                         System.out.println("Registro de Comics");
-                        if (id == 0) {
-                          System.out.println("Debe crear un usuario primero");
-                           break;
-                        }
+                      
                         System.out.println("Ingrese autor");
                         autor = scanner.nextLine();
                         System.out.println("Ingrese Titulo");
@@ -132,35 +128,32 @@ public class ComicCollectorSystem {
                         RegistroComic comic = new RegistroComic(autor, titulo, codigoComic);
                         
                         reComic.agregarLibro(comic);
+                        comics.guardarComicCSV(comic, "comics.csv");
                         break;
 
                     case 4:
                         System.out.println("Disponibilidad de libros");
                         System.out.println("Libros Arrendados");
+                        comics.cargarComicsCSV("comics.csv");
+                        comics.mostrarComics();
                         
-                        for(Map.Entry<Integer,String> entry : guardar.entrySet()){
-                            System.out.println("Codigo: "+entry.getKey()+" Titulo: "+entry.getValue());
-                        }
                         System.out.println("");
                         System.out.println("________________________________________________________");
-                       if (id == 0) {
-                           System.out.println("Debe crear un usuario primero");
-                            break;
-                        }
-                        try {
-                            System.out.println("Ingresa codigo de libro");
+                      
+                        try{
+                            System.out.println("Ingresa codigo del Comic");
                             codigoComic = scanner.nextInt();
                             scanner.nextLine(); 
-                            if (!reComic.libroExiste(codigoComic)) {
-                                throw new LibroNoEncontradoException("El libro con el código " + codigoComic + " no fue encontrado.");
-                        }
-                            RegistroComic comic2 = reComic.buscarLibro(codigoComic);
                             
-                            reComic.mostrarLibros(codigoComic);
-                            if (comic2.isEstado()==false) {
-                                System.out.println("Comic no disponible para arriendo");
+                            boolean encontrado = comics.buscarComicCSV(codigoComic, "comics.csv");
+                            if (!encontrado) {
+                                System.out.println("Comic no disponible");
                                 break;
+                        }else {
+                            comics.buscarComicCSV(codigoComic, "comics.csv");
                             }
+                           
+                            
                             
                             do{
                                 try{
@@ -176,9 +169,10 @@ public class ComicCollectorSystem {
                             }
                             
                              if (opcion2==1) {
-                                 comic2.setEstado(false);
-                                 titulo = comic2.getTitulo();
-                                 guardar.put(codigoComic, titulo);
+                                
+                                 if (comics.eliminarComic(codigoComic)) {
+                                     comics.reescribirComicsCSV("comics.csv");
+                                 }
                                  System.out.println("Libro arrendado Exitosamente");
                                  System.out.println("");
                                  break;
@@ -186,11 +180,9 @@ public class ComicCollectorSystem {
                             }
                             
                             }while(opcion2!=2); 
-                        } catch (LibroNoEncontradoException e) {
-                            System.out.println(e.getMessage());
-                            break;
+                            
                         }catch(InputMismatchException e){
-                            System.out.println("Porfavor Digitar Solo Numeros  ");
+                            System.out.println("Porfavor digitar solo Numeros");
                             scanner.nextLine();
                             break;
                         }
