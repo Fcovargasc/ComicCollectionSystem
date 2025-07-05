@@ -6,12 +6,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
-//HASHMAP
+
 
 public class Usuario {
 
-    // Usamos el id como clave y el RegistroUsuario como valor
+    
     private HashMap<Integer, RegistroUsuario> lista = new HashMap<>();
 
     public void agregarUsuario(RegistroUsuario registrousuario) {
@@ -19,7 +18,7 @@ public class Usuario {
     }
 
     public RegistroUsuario buscarCliente(int id) {
-        return lista.get(id); // Devuelve el usuario o null si no existe
+        return lista.get(id); 
     }
 
     public void mostrarClientes(int id) {

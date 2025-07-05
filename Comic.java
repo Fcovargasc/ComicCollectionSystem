@@ -5,7 +5,7 @@ package REgistroComic;
 import REgistroComic.RegistroComic;
 import java.util.ArrayList;
 import java.io.*;
-//ArrayList
+
 
 public class Comic  {
      private ArrayList<RegistroComic>lista= new ArrayList<>();

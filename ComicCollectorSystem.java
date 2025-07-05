@@ -1,9 +1,10 @@
 /*
-provar y limpiar codigo para darle mas seguridad
+    =)
  */
 package ComicCollectorSystem;
 
-import Exceptions.EstudianteNoEncontradoException;
+
+import Exceptions.UsuarioNoEncontradoException;
 import REgistroComic.Comic;
 import REgistroComic.RegistroComic;
 import RegistroUsuarios.RegistroUsuario;
@@ -96,11 +97,11 @@ public class ComicCollectorSystem {
                                  scanner.nextLine(); 
                                  
                             if (!reUsuario.usuarioExiste(id)) { 
-                                throw new EstudianteNoEncontradoException("El Usuario con el código " + id + " no fue encontrado.");
+                                throw new UsuarioNoEncontradoException("El Usuario con el código " + id + " no fue encontrado.");
                         }
                             reUsuario.mostrarClientes(id);
-                            //reUsuario.mostrarClientes(id);
-                        } catch (EstudianteNoEncontradoException e) {
+                            
+                        } catch (UsuarioNoEncontradoException e) {
                             System.out.println(e.getMessage());
                             break;
                         }catch(InputMismatchException e){
